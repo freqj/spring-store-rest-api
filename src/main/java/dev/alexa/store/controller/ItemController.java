@@ -1,7 +1,9 @@
 package dev.alexa.store.controller;
 
 import dev.alexa.store.payload.ItemDto;
+import dev.alexa.store.payload.ItemListResponse;
 import dev.alexa.store.service.ItemService;
+import dev.alexa.store.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,16 @@ public class ItemController {
     {
         ItemDto itemDto = itemService.getItemById(id);
         return ResponseEntity.ok(itemDto);
+    }
+
+    @GetMapping
+    public ItemListResponse getAllItems(
+            @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER,required = false) int pageNumber,
+            @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE,required = false)int pageSize,
+            @RequestParam(value = "by", defaultValue = AppConstants.DEFAULT_SORT_BY,required = false)String sortBy,
+            @RequestParam(value = "sort", defaultValue = AppConstants.DEFAULT_SORT_DIR,required = false)String sortDir
+    ){
+       return itemService.getAllItems(pageNumber, pageSize, sortBy, sortDir);
     }
     @PostMapping
     public ResponseEntity<ItemDto> createItem(@Valid @RequestBody ItemDto itemDto)
