@@ -7,6 +7,7 @@ import dev.alexa.store.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -34,6 +35,7 @@ public class ItemController {
        return itemService.getAllItems(pageNumber, pageSize, sortBy, sortDir);
     }
     @PostMapping
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ItemDto> createItem(@Valid @RequestBody ItemDto itemDto)
     {
         ItemDto item = itemService.createItem(itemDto);
@@ -41,6 +43,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity deleteItem(@PathVariable(name = "id") Long id)
     {
         itemService.deleteItemById(id);
@@ -48,6 +51,7 @@ public class ItemController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ItemDto> updateItem(@Valid @RequestBody ItemDto itemDto, @PathVariable(name = "id") Long id)
     {
         ItemDto updatedItem = itemService.updateItem(itemDto, id);
