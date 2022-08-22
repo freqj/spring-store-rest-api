@@ -1,7 +1,8 @@
 package dev.alexa.store.controller;
 
+import dev.alexa.store.domain.Item;
 import dev.alexa.store.payload.ItemDto;
-import dev.alexa.store.payload.ItemListResponse;
+import dev.alexa.store.payload.ContentListResponse;
 import dev.alexa.store.service.ItemService;
 import dev.alexa.store.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public ItemListResponse getAllItems(
+    public ContentListResponse<ItemDto> getAllItems(
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER,required = false) int pageNumber,
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE,required = false)int pageSize,
             @RequestParam(value = "by", defaultValue = AppConstants.DEFAULT_SORT_BY,required = false)String sortBy,

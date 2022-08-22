@@ -2,14 +2,11 @@ package dev.alexa.store.security;
 
 import dev.alexa.store.exception.ApiException;
 import io.jsonwebtoken.*;
-import lombok.extern.apachecommons.CommonsLog;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.rmi.server.ExportException;
 import java.util.Date;
 
 @Component

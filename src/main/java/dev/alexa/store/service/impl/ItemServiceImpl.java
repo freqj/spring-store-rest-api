@@ -3,8 +3,9 @@ package dev.alexa.store.service.impl;
 import dev.alexa.store.domain.Item;
 import dev.alexa.store.exception.ResourceNotFoundException;
 import dev.alexa.store.payload.ItemDto;
-import dev.alexa.store.payload.ItemListResponse;
+import dev.alexa.store.payload.ContentListResponse;
 import dev.alexa.store.repository.ItemRepository;
+import dev.alexa.store.repository.UserRepository;
 import dev.alexa.store.service.ItemService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,14 +22,19 @@ import java.util.stream.Collectors;
 
 @Service
 public class ItemServiceImpl implements ItemService {
-
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private ItemRepository itemRepository;
     @Autowired
     private ModelMapper mapper;
     @Override
     public ItemDto createItem(ItemDto itemDto) {
+        SecurityContext context = SecurityContextHolder.getContext();
+
         Item item = mapToItem(itemDto);
+        String username = context.getAuthentication().getName();
+        item.setOwner(userRepository.findByUsernameOrEmail(username, username).orElseThrow(()-> new ResourceNotFoundException("user", "username", username)));
         Item repoItem = itemRepository.save(item);
         ItemDto savedItem = mapToDto(repoItem);
         return savedItem;
@@ -59,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemListResponse getAllItems(int pageNumber, int pageSize, String sortBy, String sortDir) {
+    public ContentListResponse getAllItems(int pageNumber, int pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
        Pageable pageable =  PageRequest.of(pageNumber,pageSize,sort);
@@ -68,7 +76,7 @@ public class ItemServiceImpl implements ItemService {
         List<Item> listOfItems = page.getContent();
         List<ItemDto> content =    listOfItems.stream().map(item -> mapToDto(item)).collect(Collectors.toList());
 
-        ItemListResponse itemResponse = new ItemListResponse();
+        ContentListResponse<ItemDto> itemResponse = new ContentListResponse();
         itemResponse.setContent(content);
         itemResponse.setPageSize(page.getSize());
         itemResponse.setPageNumber(page.getNumber());
