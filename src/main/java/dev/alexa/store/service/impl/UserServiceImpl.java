@@ -1,22 +1,21 @@
 package dev.alexa.store.service.impl;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import dev.alexa.store.domain.User;
 import dev.alexa.store.exception.ResourceNotFoundException;
 import dev.alexa.store.payload.ContentListResponse;
+import dev.alexa.store.payload.CurrentUser;
 import dev.alexa.store.payload.UserDto;
 import dev.alexa.store.repository.UserRepository;
-import dev.alexa.store.security.View;
 import dev.alexa.store.service.UserService;
-import dev.alexa.store.utils.AppConstants;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +26,8 @@ public class UserServiceImpl implements UserService {
     private ModelMapper mapper;
     @Autowired
     UserRepository userRepository;
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Override
 
     public ContentListResponse<UserDto> getListOfUsers(int pageNumber, int pageSize, String sortBy, String sortDir) {
@@ -67,6 +67,9 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.getEmail());
         user.setLastName(userDto.getLastName());
         user.setFirstName(userDto.getFirstName());
+        if(user.getId() != id) {
+            user.setRoles(userDto.getRoles());
+        }
         UserDto updUser = mapToDto(userRepository.save(user));
         return updUser;
 
@@ -77,6 +80,18 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("user", "id", id.toString()));
         userRepository.delete(user);
 
+    }
+
+    @Override
+    public void changeUserPassword(String oldPassword, String newPassword) throws Exception {
+        CurrentUser user = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!passwordEncoder.matches(oldPassword, user.getPassword()))
+        {
+            throw new Exception("Old Password don't match");
+        }
+        User userFromDb= userRepository.findById(user.getId()).orElseThrow(() -> new ResourceNotFoundException("user", "id", user.getId().toString()));
+        userFromDb.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(userFromDb);
     }
 
     private UserDto mapToDto(User user) {

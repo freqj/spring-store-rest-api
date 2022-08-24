@@ -13,16 +13,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ContentListResponse<T> {
-    @JsonView( View.ResponseView.class)
+    @JsonView( View.ResponseView.MinimalView.class)
     private List<T> content;
-    @JsonView( View.ResponseView.class)
+    @JsonView( View.ResponseView.MinimalView.class)
     private int pageNumber;
-    @JsonView( View.ResponseView.class)
+    @JsonView( View.ResponseView.MinimalView.class)
     private int pageSize;
-    @JsonView( View.ResponseView.class)
+    @JsonView( View.ResponseView.MinimalView.class)
     private Long totalElements;
-    @JsonView( View.ResponseView.class)
+    @JsonView( View.ResponseView.MinimalView.class)
     private int totalPages;
-    @JsonView( View.ResponseView.class)
+    @JsonView( View.ResponseView.MinimalView.class)
     private boolean last;
 }

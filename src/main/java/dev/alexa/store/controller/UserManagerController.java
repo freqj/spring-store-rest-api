@@ -2,7 +2,6 @@ package dev.alexa.store.controller;
 
 
 import com.fasterxml.jackson.annotation.JsonView;
-import dev.alexa.store.domain.User;
 import dev.alexa.store.payload.ContentListResponse;
 import dev.alexa.store.payload.UserDto;
 import dev.alexa.store.security.View;
@@ -32,7 +31,7 @@ public class UserManagerController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    @JsonView( View.ResponseView.class)
+    @JsonView( View.ResponseView.MinimalView.class)
     public ContentListResponse<UserDto> getAllUsers(@RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER,required = false) int pageNumber,
                                                     @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE,required = false)int pageSize,
                                                     @RequestParam(value = "by", defaultValue = AppConstants.DEFAULT_SORT_BY,required = false)String sortBy,

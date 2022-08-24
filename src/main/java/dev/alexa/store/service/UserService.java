@@ -11,4 +11,6 @@ public interface UserService {
     getUserById(Long id);
     UserDto updateUser(UserDto userDto, Long id);
     void deleteUser(Long id);
+
+    void changeUserPassword(String oldPassword, String newPassword) throws Exception;
 }
