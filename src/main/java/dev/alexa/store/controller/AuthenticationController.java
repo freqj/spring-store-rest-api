@@ -8,6 +8,8 @@ import dev.alexa.store.payload.RegisterDto;
 import dev.alexa.store.repository.RoleRepository;
 import dev.alexa.store.repository.UserRepository;
 import dev.alexa.store.security.JwtTokenProvider;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,7 @@ import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Api("Authentication Controller")
 public class AuthenticationController {
     @Autowired
     private RoleRepository roleRepository;
@@ -42,6 +45,7 @@ public class AuthenticationController {
     private JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/login")
+    @ApiOperation("Login operation")
     public ResponseEntity<JWTAuthResponse> SignInUser(@RequestBody LoginDto loginDto)
     {
         Authentication authentication = authenticationManager.authenticate(
@@ -55,6 +59,7 @@ public class AuthenticationController {
 
 
     @PostMapping("/register")
+    @ApiOperation("Register Operation")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDto registerDto)
     {
         if(userRepository.existsByEmail(registerDto.getEmail()))

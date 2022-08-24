@@ -6,6 +6,8 @@ import dev.alexa.store.payload.ItemDto;
 import dev.alexa.store.security.View;
 import dev.alexa.store.service.ItemService;
 import dev.alexa.store.utils.AppConstants;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/item")
+@Api(value = "CRUD REST API for Item Resources")
 public class ItemController {
 
     @Autowired
@@ -31,6 +34,7 @@ public class ItemController {
 
     @GetMapping
     @JsonView({View.ResponseView.MinimalView.class})
+    @ApiOperation(value = "Get all items with page parameters")
     public ContentListResponse<ItemDto> getAllItems(
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER,required = false) int pageNumber,
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE,required = false)int pageSize,
@@ -42,6 +46,7 @@ public class ItemController {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     @JsonView({View.ItemView.FullInfo.class})
+    @ApiOperation(value = "Add item to marketplace")
     public ResponseEntity<ItemDto> createItem(@Valid @RequestBody ItemDto itemDto)
     {
         ItemDto item = itemService.createItem(itemDto);
@@ -50,6 +55,7 @@ public class ItemController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('USER')")
+    @ApiOperation(value = "Delete item from marketplace")
     public ResponseEntity deleteItem(@PathVariable(name = "id") Long id)
     {
         itemService.deleteItemById(id);
@@ -59,6 +65,7 @@ public class ItemController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('USER')")
     @JsonView({View.ItemView.FullInfo.class})
+    @ApiOperation(value = "Update item information")
     public ResponseEntity<ItemDto> updateItem(@Valid @RequestBody ItemDto itemDto, @PathVariable(name = "id") Long id)
     {
         ItemDto updatedItem = itemService.updateItem(itemDto, id);
@@ -67,6 +74,7 @@ public class ItemController {
 
     @PostMapping("buy/{id}")
     @PreAuthorize("hasRole('USER')")
+    @ApiOperation(value = "Send buy request to item owner")
     public ResponseEntity sendBuyRequestToOwner(@PathVariable Long id, @RequestBody Map<String, String> map)
     {
         String message = map.get("message");
